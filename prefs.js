@@ -80,28 +80,28 @@ class Preferences {
                 label: label,
                 hexpand: true,
                 halign: Gtk.Align.START
-            })
+            });
         }
 
         
-        const patternLabel = createLabel(_("Pattern"))
-        const patternEdit = new Gtk.Entry({ buffer: new Gtk.EntryBuffer() })
+        const patternLabel = createLabel(_("Pattern"));
+        const patternEdit = new Gtk.Entry({ buffer: new Gtk.EntryBuffer() });
         
-        const previewLabel = createLabel(_("Preview"))
-        const patternPreview = createLabel("")
+        const previewLabel = createLabel(_("Preview"));
+        const patternPreview = createLabel("");
         
-        const useDefaultLocaleLabel = createLabel(_("Use default locale") + ` (${Utils.getCurrentLocale()})`)
-        const localeBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 30 })
-        const useDefaultLocaleEdit = new Gtk.Switch( { vexpand: false, valign: Gtk.Align.CENTER })
+        const useDefaultLocaleLabel = createLabel(_("Use default locale") + ` (${Utils.getCurrentLocale()})`);
+        const localeBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 30 });
+        const useDefaultLocaleEdit = new Gtk.Switch( { vexpand: false, valign: Gtk.Align.CENTER });
         
-        const customLocaleEdit = new Gtk.Entry({ buffer: new Gtk.EntryBuffer() })
+        const customLocaleEdit = new Gtk.Entry({ buffer: new Gtk.EntryBuffer() });
         addBox(localeBox, useDefaultLocaleEdit);
         addBox(localeBox, customLocaleEdit);
         
-        const removeMessagesIndicatorLabel = createLabel( _("Remove unread messages indicator"))
-        const removeMessagesIndicatorEdit = new Gtk.Switch()
+        const removeMessagesIndicatorLabel = createLabel( _("Remove unread messages indicator"));
+        const removeMessagesIndicatorEdit = new Gtk.Switch();
 
-        const fontSizeLabel = createLabel(_("Font size"))
+        const fontSizeLabel = createLabel(_("Font size"));
         const fontSizeEdit = new Gtk.SpinButton({
             adjustment: new Gtk.Adjustment({
                 lower: 4,
@@ -111,22 +111,22 @@ class Preferences {
         })
 
         fontSizeEdit.connect('output', function (spin) {
-            spin.text = `${spin.value} pt`
-            return true
+            spin.text = `${spin.value} pt`;
+            return true;
         }.bind(this))
 
 
-        const applyAllPanelsLabel = createLabel( _("Apply to all panels (Dash to Panel)"))
-        const applyAllPanelsEdit = new Gtk.Switch()
+        const applyAllPanelsLabel = createLabel( _("Apply to all panels (Dash to Panel)"));
+        const applyAllPanelsEdit = new Gtk.Switch();
         
 
-        addRow(patternLabel, previewLabel)
-        addRow(patternEdit, patternPreview)
-        addRow(useDefaultLocaleLabel, localeBox)
-        addRow(removeMessagesIndicatorLabel, removeMessagesIndicatorEdit)
-        addRow(applyAllPanelsLabel, applyAllPanelsEdit)
+        addRow(patternLabel, previewLabel);
+        addRow(patternEdit, patternPreview);
+        addRow(useDefaultLocaleLabel, localeBox);
+        addRow(removeMessagesIndicatorLabel, removeMessagesIndicatorEdit);
+        addRow(applyAllPanelsLabel, applyAllPanelsEdit);
         addRow(fontSizeLabel, fontSizeEdit);
-        addRow(null, new Gtk.Separator())
+        addRow(null, new Gtk.Separator());
 
 
         const markup_help1 = _(`<b>Available pattern components</b>
@@ -146,7 +146,7 @@ class Preferences {
 <tt>d     </tt> - day of month
 <tt>dd    </tt> - day of month (padded)
 
-<tt>'text'</tt> - literal text`)
+<tt>'text'</tt> - literal text`);
         const markup_help2 = _(`<a href="https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table">Full list (web)</a>
 <tt>EEE   </tt> - weekday (abbrev.) <i>Tue</i>
 <tt>EEEE  </tt> - weekday (full) <i>Tuesday</i>
@@ -164,53 +164,53 @@ class Preferences {
 <tt>aaa   </tt> - period (am/pm)
 
 
-<tt>\\n    </tt> - new line`)
-        const help1 = createLabel("")
-        help1.set_markup(markup_help1)
+<tt>\\n    </tt> - new line`);
+        const help1 = createLabel("");
+        help1.set_markup(markup_help1);
 
-        const help2 = createLabel("")
-        help2.set_markup(markup_help2)
+        const help2 = createLabel("");
+        help2.set_markup(markup_help2);
         
-        addRow(help1, help2)
+        addRow(help1, help2);
 
         this.settings = settings;
         settings.bind(Utils.PrefFields.PATTERN, patternEdit.buffer, 'text', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.USE_DEFAULT_LOCALE, useDefaultLocaleEdit, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.CUSTOM_LOCALE, customLocaleEdit.buffer, 'text', Gio.SettingsBindFlags.DEFAULT);
-        settings.bind(Utils.PrefFields.REMOVE_MESSAGES_INDICATOR, removeMessagesIndicatorEdit, 'active', Gio.SettingsBindFlags.DEFAULT)
+        settings.bind(Utils.PrefFields.REMOVE_MESSAGES_INDICATOR, removeMessagesIndicatorEdit, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.APPLY_ALL_PANELS, applyAllPanelsEdit, 'active', Gio.SettingsBindFlags.DEFAULT);
         settings.bind(Utils.PrefFields.FONT_SIZE, fontSizeEdit, 'value', Gio.SettingsBindFlags.DEFAULT);
-        const sensitivityBindFlags = Gio.SettingsBindFlags.GET | Gio.SettingsBindFlags.NO_SENSITIVITY | Gio.SettingsBindFlags.INVERT_BOOLEAN
-        settings.bind(Utils.PrefFields.USE_DEFAULT_LOCALE, customLocaleEdit, 'sensitive', sensitivityBindFlags)
+        const sensitivityBindFlags = Gio.SettingsBindFlags.GET | Gio.SettingsBindFlags.NO_SENSITIVITY | Gio.SettingsBindFlags.INVERT_BOOLEAN;
+        settings.bind(Utils.PrefFields.USE_DEFAULT_LOCALE, customLocaleEdit, 'sensitive', sensitivityBindFlags);
 
-        useDefaultLocaleEdit.connect('state-set', this.generatePreview.bind(this))
-        customLocaleEdit.buffer.connect_after('inserted-text', this.generatePreview.bind(this))
-        customLocaleEdit.buffer.connect_after('deleted-text', this.generatePreview.bind(this))
-        patternEdit.buffer.connect_after('inserted-text', this.generatePreview.bind(this))
-        patternEdit.buffer.connect_after('deleted-text', this.generatePreview.bind(this))
-        this._pattern = patternEdit.buffer
-        this._preview = patternPreview
-        this._customLocale = customLocaleEdit.buffer
-        this._useDefaultLocale = useDefaultLocaleEdit
-        this._previewErrorCount = 0
-        this.generatePreview()
+        useDefaultLocaleEdit.connect('state-set', this.generatePreview.bind(this));
+        customLocaleEdit.buffer.connect_after('inserted-text', this.generatePreview.bind(this));
+        customLocaleEdit.buffer.connect_after('deleted-text', this.generatePreview.bind(this));
+        patternEdit.buffer.connect_after('inserted-text', this.generatePreview.bind(this));
+        patternEdit.buffer.connect_after('deleted-text', this.generatePreview.bind(this));
+        this._pattern = patternEdit.buffer;
+        this._preview = patternPreview;
+        this._customLocale = customLocaleEdit.buffer;
+        this._useDefaultLocale = useDefaultLocaleEdit;
+        this._previewErrorCount = 0;
+        this.generatePreview();
     }
 
     generatePreview() {
-        const text = Utils.convertToPattern(this._pattern.text)
+        const text = Utils.convertToPattern(this._pattern.text);
         const locale = this._useDefaultLocale.active ? Utils.getCurrentLocale() : this._customLocale.text
         if (text.length > 1) {
             try { 
-                this._preview.label = Utils.convertFromPattern((new SimpleDateFormat(locale)).format(text, new Date()))
-                this._previewErrorCount = 0                
+                this._preview.label = Utils.convertFromPattern((new SimpleDateFormat(locale)).format(text, new Date()));
+                this._previewErrorCount = 0;
             }
             catch (e) {
-                this._previewErrorCount++
+                this._previewErrorCount++;
                 if (this._previewErrorCount > 2) {
                     if (e.message !== "fmtFn is not a function")
-                        this._preview.label = "ERROR: " + e.message
+                        this._preview.label = "ERROR: " + e.message;
                     else
-                        this._preview.label = "ERROR"
+                        this._preview.label = "ERROR";
                     
                 }
             }

@@ -22,16 +22,16 @@ import St from 'gi://St';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const MainPanel = Main.panel
+const MainPanel = Main.panel;
 
 import * as Utils from './utils.js';
 import { SimpleDateFormat } from './lib/SimpleDateFormat.js';
 
 let PATTERN = "";
-let USE_DEFAULT_LOCALE = true
-let CUSTOM_LOCALE = ""
-let LOCALE = Utils.getCurrentLocale()
-let REMOVE_MESSAGES_INDICATOR = false
+let USE_DEFAULT_LOCALE = true;
+let CUSTOM_LOCALE = "";
+let LOCALE = Utils.getCurrentLocale();
+let REMOVE_MESSAGES_INDICATOR = false;
 let APPLY_ALL_PANELS = false;
 let FONT_SIZE = 1;
 
@@ -43,7 +43,7 @@ export default class DateMenuFormatter extends Extension {
     constructor(metadata) {
         super(metadata);
 
-        this._displays = [this._createDisplay()]
+        this._displays = [this._createDisplay()];
         this._timerId = -1;
         this._settingsChangedId = null;
         this._dashToPanelConnection = null;
@@ -54,11 +54,11 @@ export default class DateMenuFormatter extends Extension {
         const display = new St.Label({
           style_class: 'clock',
           style: 'font-size: 9pt; text-align: center',
-        })
-        display.clutter_text.x_align = Clutter.ActorAlign.CENTER
-        display.clutter_text.y_align = Clutter.ActorAlign.CENTER
-        display.text = '...'
-        return display
+        });
+        display.clutter_text.x_align = Clutter.ActorAlign.CENTER;
+        display.clutter_text.y_align = Clutter.ActorAlign.CENTER;
+        display.text = '...';
+        return display;
     }
 
     _loadSettings() {
@@ -74,8 +74,8 @@ export default class DateMenuFormatter extends Extension {
         CUSTOM_LOCALE = this._settings.get_string(Utils.PrefFields.CUSTOM_LOCALE);
         APPLY_ALL_PANELS = this._settings.get_boolean(Utils.PrefFields.APPLY_ALL_PANELS);
         FONT_SIZE = this._settings.get_int(Utils.PrefFields.FONT_SIZE);
-        const locale = USE_DEFAULT_LOCALE ? Utils.getCurrentLocale() : CUSTOM_LOCALE
-        this._formatter = new SimpleDateFormat(locale)
+        const locale = USE_DEFAULT_LOCALE ? Utils.getCurrentLocale() : CUSTOM_LOCALE;
+        this._formatter = new SimpleDateFormat(locale);
     }
 
     _removeIndicator(panels) {
@@ -101,7 +101,7 @@ export default class DateMenuFormatter extends Extension {
         }
         else {
             // MainPanel is not the same as primary Dash To Panel panel, but their dateMenus are the same
-            return [[MainPanel], global.dashToPanel.panels.filter(panel => panel.statusArea.dateMenu != MainPanel.statusArea.dateMenu)]
+            return [[MainPanel], global.dashToPanel.panels.filter(panel => panel.statusArea.dateMenu != MainPanel.statusArea.dateMenu)];
         }
     }
 
@@ -158,8 +158,8 @@ export default class DateMenuFormatter extends Extension {
         this._loadSettings();
         const [affectedPanels, _] = this._getPanels();
         this._enableOn(affectedPanels);
-        this._timerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, this.update.bind(this))
-        this.update()
+        this._timerId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, this.update.bind(this));
+        this.update();
     }
 
     update() {
@@ -170,15 +170,15 @@ export default class DateMenuFormatter extends Extension {
         // if there is an exception during formatting, use the default display's text
         catch (e) {
             setText(MainPanel.statusArea.dateMenu._clockDisplay.text);
-            log("DateMenuFormatter: " + e.message)
+            log("DateMenuFormatter: " + e.message);
 
         }
         return true;
     }
 
     disable() {
-        const [affectedPanels, unaffectedPanels] = this._getPanels()
-        const allPanels = [...affectedPanels, ...unaffectedPanels]
+        const [affectedPanels, unaffectedPanels] = this._getPanels();
+        const allPanels = [...affectedPanels, ...unaffectedPanels];
         this._disableOn(allPanels);
         this._restoreIndicator(allPanels);
         GLib.Source.remove(this._timerId);
